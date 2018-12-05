@@ -56,11 +56,11 @@ namespace MSSQLWorkerTester
             SqlParameterinner.ParameterDirection = ParameterDirection.Input;
             sqlCommand.kubeMQSqlParameters.Add(SqlParameterinner);
 
-            KubeMQSqlParameter SqlParameterout = new KubeMQSqlParameter("@parameter1", 15388,SqlDbType.Int);
-            SqlParameterout.ParameterDirection = ParameterDirection.Input;
+            KubeMQSqlParameter SqlParameterout = new KubeMQSqlParameter("@parameter1",SqlDbType.Int);
+            SqlParameterout.ParameterDirection = ParameterDirection.Output;
             sqlCommand.kubeMQSqlParameters.Add(SqlParameterout);
 
-            Response response = initiatorChannel.SendRequest(CreateRequest("adapter", sqlCommand));
+            Response response = initiatorChannel.SendRequest(CreateRequest(ProceduresType.Adapter.ToString(), sqlCommand));
             ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
             if (resultModel.Error == (int)ResultsEnum.Error)
             {
@@ -80,7 +80,7 @@ namespace MSSQLWorkerTester
             sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
             sqlCommand.CommandText = "Procedure.Name";
 
-            Response response = initiatorChannel.SendRequest(CreateRequest("NonQuerry", sqlCommand));
+            Response response = initiatorChannel.SendRequest(CreateRequest(ProceduresType.NonQuery.ToString(), sqlCommand));
 
             ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
             if (resultModel.Error == (int)ResultsEnum.Error)
@@ -108,7 +108,7 @@ namespace MSSQLWorkerTester
             SqlParameterout.ParameterDirection = ParameterDirection.Input;
             sqlCommand.kubeMQSqlParameters.Add(SqlParameterout);
 
-            Response response = initiatorChannel.SendRequest(CreateRequest("scalar", sqlCommand));
+            Response response = initiatorChannel.SendRequest(CreateRequest(ProceduresType.Scalar.ToString(), sqlCommand));
             ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
             if (resultModel.Error == (int)ResultsEnum.Error)
             {
