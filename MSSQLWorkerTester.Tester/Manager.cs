@@ -54,11 +54,11 @@ namespace MSSQLWorkerTester
 
             KubeSqlParameters SqlParameterinner = new KubeSqlParameters("@parameter0", 501454, SqlDbType.Int);
             SqlParameterinner.ParameterDirection = ParameterDirection.Input;
-            sqlCommand.sqlParameter.Add(SqlParameterinner);
+            sqlCommand.sqlParameters.Add(SqlParameterinner);
 
             KubeSqlParameters SqlParameterout = new KubeSqlParameters("@parameter1", 15388,SqlDbType.Int);
             SqlParameterout.ParameterDirection = ParameterDirection.Input;
-            sqlCommand.sqlParameter.Add(SqlParameterout);
+            sqlCommand.sqlParameters.Add(SqlParameterout);
 
             Response response = initiatorChannel.SendRequest(CreateRequest("adapter", sqlCommand));
             ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
@@ -102,11 +102,11 @@ namespace MSSQLWorkerTester
 
             KubeSqlParameters SqlParameterinner = new KubeSqlParameters("@parameter0", 501454, SqlDbType.Int);
             SqlParameterinner.ParameterDirection = ParameterDirection.Input;
-            sqlCommand.sqlParameter.Add(SqlParameterinner);
+            sqlCommand.sqlParameters.Add(SqlParameterinner);
 
             KubeSqlParameters SqlParameterout = new KubeSqlParameters("@parameter1", 15388, SqlDbType.Int);
             SqlParameterout.ParameterDirection = ParameterDirection.Input;
-            sqlCommand.sqlParameter.Add(SqlParameterout);
+            sqlCommand.sqlParameters.Add(SqlParameterout);
 
             Response response = initiatorChannel.SendRequest(CreateRequest("scalar", sqlCommand));
             ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;

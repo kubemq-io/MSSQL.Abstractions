@@ -11,10 +11,6 @@ namespace KubeMSSQL.Abstractions
     public class SQLCommandRequest
     {
         /// <summary>
-        /// Represent the KubeMSSQL.Abstractions.kubeSqlParameters.
-        /// </summary>
-        public KubeSqlParameters kubeSqlParameters { get; set; }
-        /// <summary>
         /// Represent the type of System.Data.CommandType.
         /// </summary>
         public CommandType CommandType { get; set; }
@@ -22,23 +18,23 @@ namespace KubeMSSQL.Abstractions
         /// Represent the Procedure or the command text.
         /// </summary>
         public string CommandText { get; set; }
-        private List<KubeSqlParameters> _sqlParameter;
+        private List<KubeSqlParameters> _sqlParameters;
         /// <summary>
         /// List of KubeMSSQL.Abstractions.KubeSqlParameter.
         /// </summary>
-        public List<KubeSqlParameters> sqlParameter
+        public List<KubeSqlParameters> sqlParameters
         {
             get
             {
-                if (_sqlParameter == null)
+                if (_sqlParameters == null)
                 {
-                    _sqlParameter = new List<KubeSqlParameters>();
+                    _sqlParameters = new List<KubeSqlParameters>();
                 }
-                return _sqlParameter;
+                return _sqlParameters;
             }
             set
             {
-                _sqlParameter = value;
+                _sqlParameters = value;
             }
         }
     }
