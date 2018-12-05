@@ -18,23 +18,23 @@ namespace KubeMSSQL.Abstractions
         /// Represent the Procedure or the command text.
         /// </summary>
         public string CommandText { get; set; }
-        private List<KubeSqlParameters> _sqlParameters;
+        private List<KubeMQSqlParameter> _kubeMQSqlParameters;
         /// <summary>
         /// List of KubeMSSQL.Abstractions.KubeSqlParameter.
         /// </summary>
-        public List<KubeSqlParameters> sqlParameters
+        public List<KubeMQSqlParameter> kubeMQSqlParameters
         {
             get
             {
-                if (_sqlParameters == null)
+                if (_kubeMQSqlParameters == null)
                 {
-                    _sqlParameters = new List<KubeSqlParameters>();
+                    _kubeMQSqlParameters = new List<KubeMQSqlParameter>();
                 }
-                return _sqlParameters;
+                return _kubeMQSqlParameters;
             }
             set
             {
-                _sqlParameters = value;
+                _kubeMQSqlParameters = value;
             }
         }
     }
