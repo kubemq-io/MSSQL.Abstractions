@@ -15,7 +15,7 @@ namespace KubeMQMSSQL.Abstractions.Results
     public enum ProceduresType
     {
         Adapter,
-        NonQuerry,
+        NonQuery,
         Scalar,
         NotSupported
     }

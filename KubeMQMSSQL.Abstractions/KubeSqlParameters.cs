@@ -29,12 +29,12 @@ namespace KubeMSSQL.Abstractions
         /// </summary>
         public ParameterDirection ParameterDirection;
         /// <summary>
-        /// Initializes a new instance of the KubeMSSQL.Abstractions.KubeSqlParamters without value.
+        /// Initializes a new instance of the KubeMSSQL.Abstractions.KubeSqlParameters without value.
         /// </summary>
         /// <param name="_ParameterName">The name of the parameter.</param>
         /// <param name="_SqlDbType">Represent the System.Data.SqlDbType of this parameter. </param>
         /// <param name="_Size">Represent the size of the System.Data.SqlDbType,If left empty will set to a default value depend on the System.Data.SqlDbType. </param>
-        public KubeSqlParameters(string _ParameterName,SqlDbType _SqlDbType, int? _Size = null)
+        public KubeSqlParameters(string _ParameterName, SqlDbType _SqlDbType, int? _Size = null)
         {
             if (_Size == null)
             {
