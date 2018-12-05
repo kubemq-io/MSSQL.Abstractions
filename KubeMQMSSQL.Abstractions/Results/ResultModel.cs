@@ -14,14 +14,14 @@ namespace KubeMQMSSQL.Abstractions.Results
         public int Error { get; set; }
         public int Result { get; set; }
         public object ScalarResult;
-        private List<KubeSqlParamters> _ReturnValue;
-        public List<KubeSqlParamters> ReturnValue
+        private List<KubeSqlParameters> _ReturnValue;
+        public List<KubeSqlParameters> ReturnValue
         {
             get
             {
                 if (_ReturnValue == null)
                 {
-                    _ReturnValue = new List<KubeSqlParamters>();
+                    _ReturnValue = new List<KubeSqlParameters>();
                 }
                 return _ReturnValue;
             }
@@ -32,7 +32,7 @@ namespace KubeMQMSSQL.Abstractions.Results
         }
         public ResultModel()
         {
-            List<KubeSqlParamters> ReturnValue = new List<KubeSqlParamters>();
+            List<KubeSqlParameters> ReturnValue = new List<KubeSqlParameters>();
         }
     }
 }

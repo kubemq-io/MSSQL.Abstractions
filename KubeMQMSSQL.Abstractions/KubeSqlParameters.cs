@@ -6,7 +6,7 @@ namespace KubeMSSQL.Abstractions
     /// Represents a parameter to a send to the DataBase using the KubeMQ.
     /// </summary>
     [Serializable]
-    public class KubeSqlParamters
+    public class KubeSqlParameters
     {
         /// <summary>
         /// Represent System.Data.SqlDbType
@@ -34,7 +34,7 @@ namespace KubeMSSQL.Abstractions
         /// <param name="_ParameterName">The name of the parameter.</param>
         /// <param name="_SqlDbType">Represent the System.Data.SqlDbType of this parameter. </param>
         /// <param name="_Size">Represent the size of the System.Data.SqlDbType,If left empty will set to a default value depend on the System.Data.SqlDbType. </param>
-        public KubeSqlParamters(string _ParameterName,SqlDbType _SqlDbType, int? _Size = null)
+        public KubeSqlParameters(string _ParameterName,SqlDbType _SqlDbType, int? _Size = null)
         {
             if (_Size == null)
             {
@@ -48,7 +48,7 @@ namespace KubeMSSQL.Abstractions
         /// <param name="_Value">Represent the value of the parameter.</param>
         /// <param name="_SqlDbType">Represent the System.Data.SqlDbType of this parameter. </param>
         /// <param name="_Size">Represent the size of the System.Data.SqlDbType,If left empty will set to a default value depend on the System.Data.SqlDbType.</param>
-        public KubeSqlParamters(string _ParameterName, object _Value, SqlDbType _SqlDbType, int? _Size = null)
+        public KubeSqlParameters(string _ParameterName, object _Value, SqlDbType _SqlDbType, int? _Size = null)
         {
             Value = _Value;
             if(_Size==null)

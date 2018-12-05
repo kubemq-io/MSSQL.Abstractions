@@ -52,11 +52,11 @@ namespace MSSQLWorkerTester
             sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
             sqlCommand.CommandText = "Procedure.Name";
 
-            KubeSqlParamters SqlParameterinner = new KubeSqlParamters("@parameter0", 501454, SqlDbType.Int);
+            KubeSqlParameters SqlParameterinner = new KubeSqlParameters("@parameter0", 501454, SqlDbType.Int);
             SqlParameterinner.ParameterDirection = ParameterDirection.Input;
             sqlCommand.sqlParameter.Add(SqlParameterinner);
 
-            KubeSqlParamters SqlParameterout = new KubeSqlParamters("@parameter1", 15388,SqlDbType.Int);
+            KubeSqlParameters SqlParameterout = new KubeSqlParameters("@parameter1", 15388,SqlDbType.Int);
             SqlParameterout.ParameterDirection = ParameterDirection.Input;
             sqlCommand.sqlParameter.Add(SqlParameterout);
 
@@ -100,11 +100,11 @@ namespace MSSQLWorkerTester
             sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
             sqlCommand.CommandText = "Procedure.Name";
 
-            KubeSqlParamters SqlParameterinner = new KubeSqlParamters("@parameter0", 501454, SqlDbType.Int);
+            KubeSqlParameters SqlParameterinner = new KubeSqlParameters("@parameter0", 501454, SqlDbType.Int);
             SqlParameterinner.ParameterDirection = ParameterDirection.Input;
             sqlCommand.sqlParameter.Add(SqlParameterinner);
 
-            KubeSqlParamters SqlParameterout = new KubeSqlParamters("@parameter1", 15388, SqlDbType.Int);
+            KubeSqlParameters SqlParameterout = new KubeSqlParameters("@parameter1", 15388, SqlDbType.Int);
             SqlParameterout.ParameterDirection = ParameterDirection.Input;
             sqlCommand.sqlParameter.Add(SqlParameterout);
 
