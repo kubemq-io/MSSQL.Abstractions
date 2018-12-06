@@ -72,6 +72,21 @@ Struct that return the Data Base answer, can also indicate if any errors occurre
 - ScalarResult - Set internally - Return the result of Scalar request.
 - ReturnValue - internall use only
 
+CreateRequest from code
+```C#
+        private Request CreateRequest(int SqlCommandType, SQLCommandRequest sqlCommand)
+        {
+
+            Request request = new Request
+            {
+                Body = KubeMQ.SDK.csharp.Tools.Converter.ToByteArray(sqlCommand),
+                Metadata = SqlCommandType.ToString()
+            };
+            return request;
+        }
+```
+
+
 Reading ResultModel from code
 ```C#
 Response response = initiatorChannel.SendRequest(CreateRequest("adapter", sqlCommand));
@@ -90,7 +105,7 @@ SQLCommandRequest sqlCommand = new SQLCommandRequest();
 sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
 sqlCommand.CommandText = "Procedure.Name";
 
-Response response = initiatorChannel.SendRequest(CreateRequest(ProceduresType.NonQuery.ToString(), sqlCommand));
+Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.NonQuery.ToString(), sqlCommand));
 
 ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
 if (resultModel.Error == (int)ResultsEnum.Error)
@@ -114,7 +129,7 @@ KubeMQSqlParameter SqlParameterout = new KubeMQSqlParameter("@parameter1",SqlDbT
 SqlParameterout.ParameterDirection = ParameterDirection.Output;
 sqlCommand.kubeMQSqlParameters.Add(SqlParameterout);
 
-Response response = initiatorChannel.SendRequest(CreateRequest(ProceduresType.Adapter.ToString(), sqlCommand));
+Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.Adapter.ToString(), sqlCommand));
 ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
 if (resultModel.Error == (int)ResultsEnum.Error)
 {
@@ -137,7 +152,7 @@ KubeMQSqlParameter SqlParameterout = new KubeMQSqlParameter("@parameter1", 15388
 SqlParameterout.ParameterDirection = ParameterDirection.Input;
 sqlCommand.kubeMQSqlParameters.Add(SqlParameterout);
 
-Response response = initiatorChannel.SendRequest(CreateRequest(ProceduresType.Scalar.ToString(), sqlCommand));
+Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.Scalar.ToString(), sqlCommand));
 ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
 if (resultModel.Error == (int)ResultsEnum.Error)
 {

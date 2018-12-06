@@ -60,7 +60,7 @@ namespace MSSQLWorkerTester
             SqlParameterout.ParameterDirection = ParameterDirection.Output;
             sqlCommand.kubeMQSqlParameters.Add(SqlParameterout);
 
-            Response response = initiatorChannel.SendRequest(CreateRequest(ProceduresType.Adapter.ToString(), sqlCommand));
+            Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.NonQuery, sqlCommand));
             ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
             if (resultModel.Error == (int)ResultsEnum.Error)
             {
@@ -80,7 +80,7 @@ namespace MSSQLWorkerTester
             sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
             sqlCommand.CommandText = "Procedure.Name";
 
-            Response response = initiatorChannel.SendRequest(CreateRequest(ProceduresType.NonQuery.ToString(), sqlCommand));
+            Response response = initiatorChannel.SendRequest(CreateRequest((int) ProceduresType.NonQuery, sqlCommand));
 
             ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
             if (resultModel.Error == (int)ResultsEnum.Error)
@@ -108,7 +108,7 @@ namespace MSSQLWorkerTester
             SqlParameterout.ParameterDirection = ParameterDirection.Input;
             sqlCommand.kubeMQSqlParameters.Add(SqlParameterout);
 
-            Response response = initiatorChannel.SendRequest(CreateRequest(ProceduresType.Scalar.ToString(), sqlCommand));
+            Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.NonQuery, sqlCommand));
             ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
             if (resultModel.Error == (int)ResultsEnum.Error)
             {
@@ -123,12 +123,13 @@ namespace MSSQLWorkerTester
         /// <param name="SqlCommandType">Metadata</param>
         /// <param name="sqlCommand">DB Procedure parameter</param>
         /// <returns></returns>
-        private Request CreateRequest(string SqlCommandType, SQLCommandRequest sqlCommand)
+        private Request CreateRequest(int SqlCommandType, SQLCommandRequest sqlCommand)
         {
+
             Request request = new Request
             {
                 Body = KubeMQ.SDK.csharp.Tools.Converter.ToByteArray(sqlCommand),
-                Metadata = SqlCommandType
+                Metadata = SqlCommandType.ToString()
             };
             return request;
         }
