@@ -14,7 +14,7 @@ The SDK is an assembly of structs that are required to send Query to the KubeMQM
 
 # Install via Nuget:
 ```
-  Install-Package KubeMQMSSQL.Abstractions -Version 1.0.0
+  Install-Package KubeMQMSSQL.Abstractions -Version 1.0.4
 ```
 
 # Supports:
@@ -45,6 +45,7 @@ Struct that is use to pass the SqlParameter to the KubeMQMSSQLConnector.
 - Size - Optional. Represent the size assign to the SQLParameter. if left omitted will be filled by a default value.
 - Value - Optional. Represent the value assign to the SQLParameter.
 - ParameterDirection - Mandatory. Represent the direction of the System.Data.ParameterDirection.
+- StreamParameters - Mandatory in case of Reader Requests. A class that contain custom parameters of stream requests.
 
 Initialize KubeMQSqlParameter Input from code:
 ```C#
@@ -71,7 +72,6 @@ Struct that return the Data Base answer, can also indicate if any errors occurre
 - Result - Set internally - Return result status error that the KubeMQMSSQLWorker had during the requested run.(mainly used to perform a check as if(resultModel.Result == (int)ResultsEnum.Error))
 - ScalarResult - Set internally - Return the result of Scalar request.
 - ReturnValue - Return result of OutPut parameter when using adapter .
-- StreamParameters - A class that contain custom parameters of stream requests.
 
 CreateRequest from code
 ```C#
