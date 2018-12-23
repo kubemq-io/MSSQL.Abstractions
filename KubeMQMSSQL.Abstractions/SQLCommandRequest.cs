@@ -1,15 +1,20 @@
-﻿using System;
+﻿using KubeMQMSSQL.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Data;
 
 namespace KubeMSSQL.Abstractions
 {
-    [Serializable]
     /// <summary>
-    /// KubeSqlParam inner SQL parameter class
+    /// A struct that help define the request type and value to the KubeMQMSSQL Connector.
     /// </summary>
+    [Serializable]
     public class SQLCommandRequest
     {
+        /// <summary>
+        /// Instance of KubeMSSQL.Abstractions.StreamParameters.
+        /// </summary>
+        public StreamParameters StreamParameters { get; set; }
         /// <summary>
         /// Represent the type of System.Data.CommandType.
         /// </summary>
@@ -19,6 +24,13 @@ namespace KubeMSSQL.Abstractions
         /// </summary>
         public string CommandText { get; set; }
         private List<KubeMQSqlParameter> _kubeMQSqlParameters;
+        /// <summary>
+        /// Initialize a new instance of KubeMSSQL.Abstractions.SQLCommandRequest. 
+        /// </summary>
+        public SQLCommandRequest()
+        {
+            StreamParameters = new StreamParameters();
+        }
         /// <summary>
         /// List of KubeMSSQL.Abstractions.KubeSqlParameter.
         /// </summary>

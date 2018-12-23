@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KubeMQMSSQL.Abstractions;
+using System;
 using System.Data;
 
 namespace KubeMSSQL.Abstractions
@@ -17,7 +18,7 @@ namespace KubeMSSQL.Abstractions
         /// </summary>
         public string ParameterName { get; set; }
         /// <summary>
-        /// Represent the size assign to the SQLParameter.
+        /// Represent the size assign to the SQLParameter , if no assign will use default one.
         /// </summary>
         public int Size { get; set; }
         /// <summary>
@@ -27,19 +28,15 @@ namespace KubeMSSQL.Abstractions
         /// <summary>
         /// Represent the direction of the System.Data.ParameterDirection.
         /// </summary>
-        public ParameterDirection ParameterDirection;
+        public ParameterDirection ParameterDirection { get; set; }
         /// <summary>
         /// Initializes a new instance of the KubeMSSQL.Abstractions.KubeSqlParameters without value.
         /// </summary>
         /// <param name="_ParameterName">The name of the parameter.</param>
         /// <param name="_SqlDbType">Represent the System.Data.SqlDbType of this parameter. </param>
-        /// <param name="_Size">Represent the size of the System.Data.SqlDbType,If left empty will set to a default value depend on the System.Data.SqlDbType. </param>
-        public KubeMQSqlParameter(string _ParameterName, SqlDbType _SqlDbType, int? _Size = null)
+        public KubeMQSqlParameter(string _ParameterName, SqlDbType _SqlDbType)
         {
-            if (_Size == null)
-            {
-                SetSqlDBTypeAndName(_ParameterName, _SqlDbType);
-            }
+            SetSqlDBTypeAndName(_ParameterName,_SqlDbType);
         }
         /// <summary>
         /// Initializes a new instance of the KubeMSSQL.Abstractions.KubeSqlParamters with value.
@@ -47,14 +44,10 @@ namespace KubeMSSQL.Abstractions
         /// <param name="_ParameterName">The name of the parameter.</param>
         /// <param name="_Value">Represent the value of the parameter.</param>
         /// <param name="_SqlDbType">Represent the System.Data.SqlDbType of this parameter. </param>
-        /// <param name="_Size">Represent the size of the System.Data.SqlDbType,If left empty will set to a default value depend on the System.Data.SqlDbType.</param>
-        public KubeMQSqlParameter(string _ParameterName, object _Value, SqlDbType _SqlDbType, int? _Size = null)
+        public KubeMQSqlParameter(string _ParameterName, object _Value, SqlDbType _SqlDbType)
         {
             Value = _Value;
-            if(_Size==null)
-            {
-                SetSqlDBTypeAndName(_ParameterName, _SqlDbType);
-            }
+            SetSqlDBTypeAndName(_ParameterName,_SqlDbType);
         }
         /// <summary>
         /// Set to default size.
