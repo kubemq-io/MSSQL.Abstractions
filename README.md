@@ -131,7 +131,7 @@ Creating and sending Adapter from code:
   DataTable dataTable = resultModel.dataSet.Tables[0];
 ```
 
-Ccreating and sending Scalar from code:
+Creating and sending Scalar from code:
 ```C#
   SQLCommandRequest sqlCommand = new SQLCommandRequest();
   sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
