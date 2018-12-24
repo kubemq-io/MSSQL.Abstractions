@@ -1,16 +1,16 @@
 # KubeMQ MSSQL.Abstractions.
-.NET SDK for communicating with the KubeMQMSSQLConnector.
+.NET SDK for communicating with the KubeMQ/MSSQL Connector.
 
 # What is KubeMQ:
 Please refer to : https://kubemq.io/
 Please note that the KubeMQ MSSQL.Abstractions is an extension of https://github.com/kubemq-io/CSharp_SDK.
 
 # What is KubeMQ/MSSQL.Abstractions
-
-KubeMQ/MSSQL.Abstractions manage a single point of entry to your Data Base using KubeMQMSSQLConnector.
+KubeMQ/MSSQL Connector can manage a single point of entry to your SQL Data Base.
+KubeMQ/MSSQL Abstractions is asimple SDK to communicate with common objects with the KubeMQ/MSSQL Connector.
 
 # General SDK description
-The SDK is an assembly of structs that are required to send Query to the KubeMQMSSQLConnector.
+The SDK is an assembly of structs that are required to send Query to the KubeMQ/MSSQL Connector.
 
 # Install via Nuget:
 ```
@@ -23,12 +23,12 @@ The SDK is an assembly of structs that are required to send Query to the KubeMQM
 - .NET Standard 2.0
 
 ### The 'SQLCommandRequest' object
-Struct used to define the SQLCommand to the KubeMQMSSQLConnector ,
+Struct used to define the SQLCommand to the KubeMQM/SSQL Connector, inspired by the common used metodology.
 
 **Parameters**:
-- CommandType - Mandatory. System.Data.CommandType.
-- CommandText - Mandatory. string that represent the SQL Command or Procedure.
-- sqlParameter - Optional. A struct that contain a set of KubeMQSqlParameter [See KubeMQSqlParameter](#the-kubemqsqlParameter-object)
+- CommandType - Mandatory, System.Data.CommandType.
+- CommandText - Mandatory, string that represent the SQL Command or Procedure.
+- sqlParameter - Optional, a struct that contain a set of KubeMQSqlParameter [See KubeMQSqlParameter] (#the-kubemqsqlParameter-object)
 
 Initialize SQLCommandRequest from code:
 ```C#
@@ -38,241 +38,218 @@ sqlCommand.CommandText = "Procedure.Name";
 ```
 
 # The KubeMQSqlParameter object:
-Struct that is use to pass the SqlParameter to the KubeMQMSSQLConnector.
+Struct that is use to pass the SqlParameter to the KubeMQ/MSSQL Connector, inspired by the common used metodology.
 **Parameters**:
-- SqlDbType - Mandatory. System.Data.SqlDbType, Specifies SQL Server-specific data type. 
-- ParameterName - Mandatory. Represent the name of the SQLParameter.
-- Size - Optional. Represent the size assign to the SQLParameter. if left omitted will be filled by a default value.
-- Value - Optional. Represent the value assign to the SQLParameter.
-- ParameterDirection - Mandatory. Represent the direction of the System.Data.ParameterDirection.
-- StreamParameters - Mandatory in case of Reader Requests. A class that contain custom parameters of stream requests.
+- SqlDbType - Mandatory, System.Data.SqlDbType, specifies SQL Server-specific data type. 
+- ParameterName - Mandatory, represent the name of the SQLParameter.
+- Size - Optional, represent the size assign to the SQLParameter. If left omitted will be filled by a default value.
+- Value - Optional, represent the value assign to the SQLParameter.
+- ParameterDirection - Mandatory, represent the direction of the System.Data.ParameterDirection.
+- StreamParameters - Mandatory, in case of Reader Requests, this class will contain custom parameters of stream requests.
 
 Initialize KubeMQSqlParameter Input from code:
 ```C#
-KubeMQSqlParameter SqlParameterinner = new KubeMQSqlParameter("@parameter0", 501454, SqlDbType.Int);
-SqlParameterinner.ParameterDirection = ParameterDirection.Input;
-sqlCommand.kubeMQSqlParameters.Add(SqlParameterinner);
+  KubeMQSqlParameter SqlParameterinner = new KubeMQSqlParameter("@parameter0", 501454, SqlDbType.Int);
+  SqlParameterinner.ParameterDirection = ParameterDirection.Input;
+  sqlCommand.kubeMQSqlParameters.Add(SqlParameterinner);
 ```
-
 
 Initialize KubeMQSqlParameter OutPut from code:
 ```C#
-KubeMQSqlParameter SqlParameterout = new KubeMQSqlParameter("@parameter1", SqlDbType.Int);
-SqlParameterout.ParameterDirection = ParameterDirection.Output;
-sqlCommand.kubeMQSqlParameters.Add(SqlParameterout);
+  KubeMQSqlParameter SqlParameterout = new KubeMQSqlParameter("@parameter1", SqlDbType.Int);
+  SqlParameterout.ParameterDirection = ParameterDirection.Output;
+  sqlCommand.kubeMQSqlParameters.Add(SqlParameterout);
 ```
 
-
 # The 'ResultModel' object:
-Struct that return the Data Base answer, can also indicate if any errors occurred when trying to run the DB Procedure.
+Struct that return the Data Base answer result, can also indicate if any errors occurred when trying to run the DB Procedure.
 
 **Parameters**:
 - dataSet - Set internally - Return the System.Data.DataSet from the Data Base.(if there is any)
-- exception - Set internally - Return any Exception that occurred during the DB connection process.
-- Result - Set internally - Return result status error that the KubeMQMSSQLWorker had during the requested run.(mainly used to perform a check as if(resultModel.Result == (int)ResultsEnum.Error))
+- exception - Set internally - Return any Exception thrown by the KubeMQM/SSQL Connector process.
+- Result - Set internally - Return result status code the KubeMQMSSQLWorker of the request execution.(exmple: resultModel.Result == (int)ResultsEnum.Error))
 - ScalarResult - Set internally - Return the result of Scalar request.
 - ReturnValue - Return result of OutPut parameter when using adapter .
 
-CreateRequest from code
+Create a request and from code:
 ```C#
-        private Request CreateRequest(int SqlCommandType, SQLCommandRequest sqlCommand)
-        {
-
-            Request request = new Request
-            {
-                Body = KubeMQ.SDK.csharp.Tools.Converter.ToByteArray(sqlCommand),
-                Metadata = SqlCommandType.ToString()
-            };
-            return request;
-        }
-```
-
-
-Reading ResultModel from code
-```C#
-Response response = initiatorChannel.SendRequest(CreateRequest("adapter", sqlCommand));
-ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
-if (resultModel.Result == (int)ResultsEnum.Error)
-{
-    \\\throw some errors
-}
-DataTable dataTable = resultModel.dataSet.Tables[0];
-```
-
-
-creating and sending NonQuery from code:
-```C#
-SQLCommandRequest sqlCommand = new SQLCommandRequest();
-sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
-sqlCommand.CommandText = "Procedure.Name";
-
-Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.NonQuery, sqlCommand));
-
-ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
-if (resultModel.Result == (int)ResultsEnum.Error)
-{
-    \\\throw some errors
-}
-int Result = resultModel.Result;
-```
-
-creating and sending Adapter from code:
-```C#
-SQLCommandRequest sqlCommand = new SQLCommandRequest();
-sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
-sqlCommand.CommandText = "Procedure.Name";
-
-KubeMQSqlParameter SqlParameterinner = new KubeMQSqlParameter("@parameter0", 501454, SqlDbType.Int);
-SqlParameterinner.ParameterDirection = ParameterDirection.Input;
-sqlCommand.kubeMQSqlParameters.Add(SqlParameterinner);
-
-KubeMQSqlParameter SqlParameterout = new KubeMQSqlParameter("@parameter1",SqlDbType.Int);
-SqlParameterout.ParameterDirection = ParameterDirection.Output;
-sqlCommand.kubeMQSqlParameters.Add(SqlParameterout);
-
-Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.Adapter, sqlCommand));
-ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
-if (resultModel.Result == (int)ResultsEnum.Error)
-{
-    \\\throw some errors
-}
-DataTable dataTable = resultModel.dataSet.Tables[0];
-```
-
-creating and sending Scalar from code:
-```C#
-SQLCommandRequest sqlCommand = new SQLCommandRequest();
-sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
-sqlCommand.CommandText = "Procedure.Name";
-
-KubeMQSqlParameter SqlParameterinner = new KubeMQSqlParameter("@parameter0", 501454, SqlDbType.Int);
-SqlParameterinner.ParameterDirection = ParameterDirection.Input;
-sqlCommand.kubeMQSqlParameters.Add(SqlParameterinner);
-
-KubeMQSqlParameter SqlParameterout = new KubeMQSqlParameter("@parameter1", 15388, SqlDbType.Int);
-SqlParameterout.ParameterDirection = ParameterDirection.Input;
-sqlCommand.kubeMQSqlParameters.Add(SqlParameterout);
-
-Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.Scalar, sqlCommand));
-ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
-if (resultModel.Result == (int)ResultsEnum.Error)
-{
-    \\\throw some errors
-}
-object Result = resultModel.ScalarResult;
-```
-
-
-creating A event Listen request for Reader Results from code:
-```C#
-private Request CreateRequest(int SqlCommandType, SQLCommandRequest sqlCommand)
-{
-
+  Response response = initiatorChannel.SendRequest(CreateRequest("adapter", sqlCommand));
+  ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
+  if (resultModel.Result == (int)ResultsEnum.Error)
+  {
+      \\\throw some errors
+  }
+  DataTable dataTable = resultModel.dataSet.Tables[0];
+  
+  private Request CreateRequest(int SqlCommandType, SQLCommandRequest sqlCommand)
+  {
       Request request = new Request
       {
           Body = KubeMQ.SDK.csharp.Tools.Converter.ToByteArray(sqlCommand),
           Metadata = SqlCommandType.ToString()
       };
       return request;
-}
+  }
 ```
 
-creating and sending DataReader that return one row at a time from code:
+Creating and sending NonQuery from code:
 ```C#
-SubscribeRequest subscribeRequest = GetSubscribeRequest();
-Subscriber.SubscribeToEvents(subscribeRequest, HandleIncomingEventsExecuteReader);
+  SQLCommandRequest sqlCommand = new SQLCommandRequest();
+  sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
+  sqlCommand.CommandText = "Procedure.Name";
 
-SQLCommandRequest sqlCommand = new SQLCommandRequest();
-sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
-sqlCommand.CommandText = "Procedure.Name";
-sqlCommand.StreamParameters.ReaderReturnChannel = ChannelToReturnStream;
-//Optional parameter for delay between events that are sent from KubeMQ MSSQLConnector.
-sqlCommand.StreamParameters.DelayBetweenEvents = 500;
-Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.ExecuteDataReader, sqlCommand));
-ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
-if (resultModel.Result == (int)ResultsEnum.Error)
-{
-    \\\throw some errors
-}
+  Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.NonQuery, sqlCommand));
+
+  ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
+  if (resultModel.Result == (int)ResultsEnum.Error)
+  {
+      \\\throw some errors
+  }
+  int Result = resultModel.Result;
 ```
 
-Handle Incoming Traffic from KubeMQMSSQLConnector for ExecuteReader from code:
+Creating and sending Adapter from code:
 ```C#
-private void HandleIncomingEventsExecuteReader(EventReceive eventReceive)
-{
-   logger.LogDebug("Received event");
-   DataTable dataTable = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(eventReceive.Body) as DataTable;
-   DataRow dataRow = dataTable.Rows[0];
-   logger.LogDebug($"Received row from KubeMQ");
-}
+  SQLCommandRequest sqlCommand = new SQLCommandRequest();
+  sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
+  sqlCommand.CommandText = "Procedure.Name";
+
+  KubeMQSqlParameter SqlParameterinner = new KubeMQSqlParameter("@parameter0", 501454, SqlDbType.Int);
+  SqlParameterinner.ParameterDirection = ParameterDirection.Input;
+  sqlCommand.kubeMQSqlParameters.Add(SqlParameterinner);
+
+  KubeMQSqlParameter SqlParameterout = new KubeMQSqlParameter("@parameter1",SqlDbType.Int);
+  SqlParameterout.ParameterDirection = ParameterDirection.Output;
+  sqlCommand.kubeMQSqlParameters.Add(SqlParameterout);
+
+  Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.Adapter, sqlCommand));
+  ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
+  if (resultModel.Result == (int)ResultsEnum.Error)
+  {
+      \\\throw some errors
+  }
+  DataTable dataTable = resultModel.dataSet.Tables[0];
 ```
 
-creating and sending DataReader that return a more than one row at a time from code:
+Ccreating and sending Scalar from code:
 ```C#
-SubscribeRequest subscribeRequest = GetSubscribeRequest();
-Subscriber.SubscribeToEvents(subscribeRequest, HandleIncomingEventsReaderWithSlice);
+  SQLCommandRequest sqlCommand = new SQLCommandRequest();
+  sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
+  sqlCommand.CommandText = "Procedure.Name";
 
-SQLCommandRequest sqlCommand = new SQLCommandRequest();
-sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
-sqlCommand.CommandText = "Procedure.Name";
-sqlCommand.StreamParameters.ReaderReturnChannel = ChannelToReturnStream;
-//Optional parameter for delay between events that are sent from KubeMQ MSSQLConnector.
-sqlCommand.StreamParameters.DelayBetweenEvents = 500;
-//How many DataRows will return in one Event.
-sqlCommand.StreamParameters.SliceThreshold = 20;
+  KubeMQSqlParameter SqlParameterinner = new KubeMQSqlParameter("@parameter0", 501454, SqlDbType.Int);
+  SqlParameterinner.ParameterDirection = ParameterDirection.Input;
+  sqlCommand.kubeMQSqlParameters.Add(SqlParameterinner);
 
-Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.ExecuteDataReaderWithSlice, sqlCommand));
-ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
-if (resultModel.Result == (int)ResultsEnum.Error)
-{
-    \\\throw some errors
-}
+  KubeMQSqlParameter SqlParameterout = new KubeMQSqlParameter("@parameter1", 15388, SqlDbType.Int);
+  SqlParameterout.ParameterDirection = ParameterDirection.Input;
+  sqlCommand.kubeMQSqlParameters.Add(SqlParameterout);
+
+  Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.Scalar, sqlCommand));
+  ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
+  if (resultModel.Result == (int)ResultsEnum.Error)
+  {
+      \\\throw some errors
+  }
+  object Result = resultModel.ScalarResult;
 ```
 
-Handle Incoming Traffic from KubeMQMSSQLConnector for ExecuteReaderWithSlice from code:
+Creating a DataReader ProceduresType.ExecuteDataReader that streams evet of a single row to ReaderReturnChannel:
 ```C#
-private void HandleIncomingEventsExecuteReader(EventReceive eventReceive)
-{
-    logger.LogDebug("Received event");
-    DataTable dataTable = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(eventReceive.Body) as DataTable;
-    if (dataTable.Rows.Count == 20)
-    {
-        logger.LogDebug($"Received rows from KubeMQ");
-    }
-    else if (dataTable.Rows.Count < 20)
-    {
-        logger.LogDebug($"Received the last remaining rows from KubeMQ");
-    }
-}
+  SubscribeRequest subscribeRequest = GetSubscribeRequest();
+  Subscriber.SubscribeToEvents(subscribeRequest, HandleIncomingEventsExecuteReader);
+
+  SQLCommandRequest sqlCommand = new SQLCommandRequest();
+  sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
+  sqlCommand.CommandText = "Procedure.Name";
+  sqlCommand.StreamParameters.ReaderReturnChannel = ChannelToReturnStream;
+  //Optional parameter for delay between events that are sent from KubeMQ MSSQLConnector.
+  sqlCommand.StreamParameters.DelayBetweenEvents = 500;
+  Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.ExecuteDataReader, sqlCommand));
+  ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
+  if (resultModel.Result == (int)ResultsEnum.Error)
+  {
+      \\\throw some errors
+  }
 ```
 
-creating and sending DataReader that return one table(use when there is more than one DataTable in the result) at a time from code:
+Handle Incoming Traffic from KubeMQ/MSSQL Connector for ProceduresType.ExecuteDataReader from code:
 ```C#
-SubscribeRequest subscribeRequest = GetSubscribeRequest();
-Subscriber.SubscribeToEvents(subscribeRequest, HandleIncomingEventsReaderWithMultiTable);
-
-SQLCommandRequest sqlCommand = new SQLCommandRequest();
-sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
-sqlCommand.CommandText = "Procedure.Name";
-sqlCommand.StreamParameters.ReaderReturnChannel = ChannelToReturnStream;
-
-Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.ExecuteDataReaderWithMultiTable, sqlCommand));
-ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
-if (resultModel.Result == (int)ResultsEnum.Error)
-{
-    \\\throw some errors
-}
+  private void HandleIncomingEventsExecuteReader(EventReceive eventReceive)
+  {
+     logger.LogDebug("Received event");
+     DataTable dataTable = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(eventReceive.Body) as DataTable;
+     DataRow dataRow = dataTable.Rows[0];
+     logger.LogDebug($"Received row from KubeMQ");
+  }
 ```
 
-Handle Incoming Traffic from KubeMQMSSQLConnector for ExecuteReaderWithSlice from code:
+Creating a DataReader ProceduresType.ExecuteDataReaderWithSlice that streams evet of multiple rows to ReaderReturnChannel:
 ```C#
-private void HandleIncomingEventsExecuteReader(EventReceive eventReceive)
-{
-    logger.LogDebug("Received event");
-    DataTable dataTable = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(eventReceive.Body) as DataTable;
-    if (dataTable != null)
-    {
-        logger.LogDebug($"Received dataTable from KubeMQ");
-    }
-}
+  SubscribeRequest subscribeRequest = GetSubscribeRequest();
+  Subscriber.SubscribeToEvents(subscribeRequest, HandleIncomingEventsReaderWithSlice);
+
+  SQLCommandRequest sqlCommand = new SQLCommandRequest();
+  sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
+  sqlCommand.CommandText = "Procedure.Name";
+  sqlCommand.StreamParameters.ReaderReturnChannel = ChannelToReturnStream;
+  //Optional parameter for delay between events that are sent from KubeMQ MSSQLConnector.
+  sqlCommand.StreamParameters.DelayBetweenEvents = 500;
+  //How many DataRows will return in one Event.
+  sqlCommand.StreamParameters.SliceThreshold = 20;
+
+  Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.ExecuteDataReaderWithSlice, sqlCommand));
+  ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
+  if (resultModel.Result == (int)ResultsEnum.Error)
+  {
+      \\\throw some errors
+  }
+```
+
+Handle incoming traffic from KubeMQ/MSSQL Connector for ProceduresType.ExecuteDataReaderWithSlice from code:
+```C#
+  private void HandleIncomingEventsExecuteReader(EventReceive eventReceive)
+  {
+      logger.LogDebug("Received event");
+      DataTable dataTable = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(eventReceive.Body) as DataTable;
+      if (dataTable.Rows.Count == 20)
+      {
+          logger.LogDebug($"Received rows from KubeMQ");
+      }
+      else if (dataTable.Rows.Count < 20)
+      {
+          logger.LogDebug($"Received the last remaining rows from KubeMQ");
+      }
+  }
+```
+
+Creating a DataReader ProceduresType.ExecuteDataReaderWithMultiTable that streams single table to ReaderReturnChannel:
+```C#
+  SubscribeRequest subscribeRequest = GetSubscribeRequest();
+  Subscriber.SubscribeToEvents(subscribeRequest, HandleIncomingEventsReaderWithMultiTable);
+
+  SQLCommandRequest sqlCommand = new SQLCommandRequest();
+  sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
+  sqlCommand.CommandText = "Procedure.Name";
+  sqlCommand.StreamParameters.ReaderReturnChannel = ChannelToReturnStream;
+
+  Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.ExecuteDataReaderWithMultiTable, sqlCommand));
+  ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
+  if (resultModel.Result == (int)ResultsEnum.Error)
+  {
+      \\\throw some errors
+  }
+```
+
+Handle incoming traffic from KubeMQM/SSQL Connector for ProceduresType.ExecuteDataReaderWithMultiTable from code:
+```C#
+  private void HandleIncomingEventsExecuteReader(EventReceive eventReceive)
+  {
+      logger.LogDebug("Received event");
+      DataTable dataTable = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(eventReceive.Body) as DataTable;
+      if (dataTable != null)
+      {
+          logger.LogDebug($"Received dataTable from KubeMQ");
+      }
+  }
 ```
