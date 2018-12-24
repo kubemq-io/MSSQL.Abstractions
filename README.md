@@ -3,7 +3,7 @@
 
 # What is KubeMQ:
 Please refer to : https://kubemq.io/
-Please note that the KubeMQ MSSQL.Abstractions is an extension of https://github.com/kubemq-io/CSharp_SDK.
+Please note that the KubeMQ/MSSQL Abstractions is an extension of https://github.com/kubemq-io/CSharp_SDK.
 
 # What is KubeMQ/MSSQL.Abstractions
 KubeMQ/MSSQL Connector can manage a single point of entry to your SQL Data Base.
