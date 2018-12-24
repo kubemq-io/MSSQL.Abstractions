@@ -1,12 +1,11 @@
-﻿using KubeMQMSSQL.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 
 namespace KubeMSSQL.Abstractions
 {
     /// <summary>
-    /// A struct that help define the request type and value to the KubeMQMSSQL Connector.
+    /// A class that help define the request type and value to the KubeMQMSSQL Connector.
     /// </summary>
     [Serializable]
     public class SQLCommandRequest

@@ -1,15 +1,11 @@
-﻿using KubeMQMSSQL.Abstractions;
-using KubeMQMSSQL.Abstractions.Results;
+﻿using KubeMQMSSQL.Abstractions.Results;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Text;
 using KubeMQ.SDK.csharp.CommandQuery;
 using KubeMSSQL.Abstractions;
 using KubeMQ.SDK.csharp.Subscription;
 using KubeMQ.SDK.csharp.Events;
+using KubeMQ.SDK.csharp.Tools;
 
 namespace MSSQLWorkerTester
 {
@@ -54,9 +50,9 @@ namespace MSSQLWorkerTester
             sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
             sqlCommand.CommandText = "Procedure.Name";
 
-            KubeMQSqlParameter SqlParameterout0 = new KubeMQSqlParameter("@ParameterIn", SqlDbType.Int);
-            SqlParameterout0.ParameterDirection = ParameterDirection.Input;
-            sqlCommand.kubeMQSqlParameters.Add(SqlParameterout0);
+            KubeMQSqlParameter SqlParameterin0 = new KubeMQSqlParameter("@ParameterIn", SqlDbType.Int);
+            SqlParameterin0.ParameterDirection = ParameterDirection.Input;
+            sqlCommand.kubeMQSqlParameters.Add(SqlParameterin0);
 
             KubeMQSqlParameter SqlParameterout1 = new KubeMQSqlParameter("@Parameterout1", SqlDbType.NVarChar);
             SqlParameterout1.ParameterDirection = ParameterDirection.Output;
@@ -253,8 +249,8 @@ namespace MSSQLWorkerTester
         private void HandleIncomingEventsExecuteReader(EventReceive eventReceive)
         {
             logger.LogDebug("Received event");
-            DataTable dataTable = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(eventReceive.Body) as DataTable;
-            DataRow dataRow = dataTable.Rows[0];
+            StreamResultModel streamResult = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(eventReceive.Body) as StreamResultModel;
+            DataRow dataRow = streamResult.dataTable.Rows[0];
             logger.LogDebug($"Received row from KubeMQ");
         }
 
@@ -265,12 +261,12 @@ namespace MSSQLWorkerTester
         private void HandleIncomingEventsReaderWithSlice(EventReceive eventReceive)
         {
             logger.LogDebug("Received event");
-            DataTable dataTable = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(eventReceive.Body) as DataTable;
-            if (dataTable.Rows.Count == 20)
+            StreamResultModel streamResult = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(eventReceive.Body) as StreamResultModel;
+            if (streamResult.dataTable.Rows.Count == 20)
             {
                 logger.LogDebug($"Received rows from KubeMQ");
             }
-            else if (dataTable.Rows.Count < 20)
+            else if (streamResult.dataTable.Rows.Count < 20)
             {
                 logger.LogDebug($"Received the last remaining rows from KubeMQ");
             }
@@ -283,10 +279,32 @@ namespace MSSQLWorkerTester
         private void HandleIncomingEventsReaderWithMultiTable(EventReceive eventReceive)
         {
             logger.LogDebug("Received event");
-            DataTable dataTable = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(eventReceive.Body) as DataTable;
-            if (dataTable != null)
+            StreamResultModel streamResult = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(eventReceive.Body) as StreamResultModel;
+            if (streamResult != null)
             {
                 logger.LogDebug($"Received dataTable from KubeMQ");
+            }
+        }
+
+        /// <summary>
+        /// Handle Incoming events and act according to key received.
+        /// </summary>
+        /// <param name="eventReceive"></param>
+        private void HandleIncomingEventsReaderAllTypes(EventReceive eventReceive)
+        {
+            StreamResultModel streamResultModel = Converter.FromByteArray(eventReceive.Body) as StreamResultModel;
+
+            switch (streamResultModel.Key)
+            {
+                case "MyKeySingleRowReader":
+                    //Do some SingleRow logic
+                    break;
+                case "ReaderWithSlice":
+                    //Do some Reader with slice logic
+                    break;
+                case "ReaderMultiTable":
+                    //Do some MultiTable Logic
+                    break;
             }
         }
         #endregion

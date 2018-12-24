@@ -22,6 +22,10 @@ namespace KubeMSSQL.Abstractions
         /// </summary>
         public int SliceThreshold { get; set; }
         /// <summary>
+        /// A string identifier that help distinguish between StreamResultModels.
+        /// </summary>
+        public string Key { get; set; }
+        /// <summary>
         /// Initialize a new instance of KubeMSSQL.Abstractions.StreamParameters.
         /// </summary>
         public StreamParameters()

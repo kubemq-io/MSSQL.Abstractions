@@ -1,5 +1,4 @@
-﻿using KubeMQMSSQL.Abstractions;
-using System;
+﻿using System;
 using System.Data;
 
 namespace KubeMSSQL.Abstractions
@@ -36,7 +35,7 @@ namespace KubeMSSQL.Abstractions
         /// <param name="_SqlDbType">Represent the System.Data.SqlDbType of this parameter. </param>
         public KubeMQSqlParameter(string _ParameterName, SqlDbType _SqlDbType)
         {
-            SetSqlDBTypeAndName(_ParameterName,_SqlDbType);
+            SetSqlDBTypeAndName(_ParameterName, _SqlDbType);
         }
         /// <summary>
         /// Initializes a new instance of the KubeMSSQL.Abstractions.KubeSqlParamters with value.
@@ -47,7 +46,7 @@ namespace KubeMSSQL.Abstractions
         public KubeMQSqlParameter(string _ParameterName, object _Value, SqlDbType _SqlDbType)
         {
             Value = _Value;
-            SetSqlDBTypeAndName(_ParameterName,_SqlDbType);
+            SetSqlDBTypeAndName(_ParameterName, _SqlDbType);
         }
         /// <summary>
         /// Set to default size.
