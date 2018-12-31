@@ -82,7 +82,7 @@ Struct that return the Data Base answer result, can also indicate if any errors 
 
 Create a request and from code:
 ```C#
-  Response response = initiatorChannel.SendRequest(CreateRequest("adapter", sqlCommand));
+  Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.Adapter, sqlCommand));
   ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
   if (resultModel.Result == (int)ResultsEnum.Error)
   {
