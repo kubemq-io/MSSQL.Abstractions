@@ -14,7 +14,7 @@ The SDK is an assembly of structs that are required to send Query to the KubeMQ/
 
 # Install via Nuget:
 ```
-  Install-Package KubeMQMSSQL.Abstractions -Version 1.0.4
+  Install-Package KubeMQMSSQL.Abstractions -Version 1.0.5
 ```
 
 # Supports:
@@ -28,7 +28,8 @@ Struct used to define the SQLCommand to the KubeMQM/SSQL Connector, inspired by 
 **Parameters**:
 - CommandType - Mandatory, System.Data.CommandType.
 - CommandText - Mandatory, string that represent the SQL Command or Procedure.
-- sqlParameter - Optional, a struct that contain a set of KubeMQSqlParameter [See KubeMQSqlParameter] (#the-kubemqsqlParameter-object)
+- sqlParameter - Optional, a struct that contain a set of KubeMQSqlParameter [See KubeMQSqlParameter](#the-kubemqsqlparameter-object)
+- StreamParameters - Optional(Mandatory when using stream) a struct that contain a set of parameters used to define stream request. [see StreamParameters](#the-streamparameters-object) 
 
 Initialize SQLCommandRequest from code:
 ```C#
@@ -45,7 +46,6 @@ Struct that is use to pass the SqlParameter to the KubeMQ/MSSQL Connector, inspi
 - Size - Optional, represent the size assign to the SQLParameter. If left omitted will be filled by a default value.
 - Value - Optional, represent the value assign to the SQLParameter.
 - ParameterDirection - Mandatory, represent the direction of the System.Data.ParameterDirection.
-- StreamParameters - Mandatory, in case of Reader Requests, this class will contain custom parameters of stream requests.
 
 Initialize KubeMQSqlParameter Input from code:
 ```C#
@@ -60,6 +60,15 @@ Initialize KubeMQSqlParameter OutPut from code:
   SqlParameterout.ParameterDirection = ParameterDirection.Output;
   sqlCommand.kubeMQSqlParameters.Add(SqlParameterout);
 ```
+
+# The StreamParameters object:
+A Struct that contain custom parameters of stream requests.
+
+**Parameters**:
+- DelayBetweenEvents Optional - Represent the amount of delay between events sending.(milliseconds).
+- ReaderReturnChannel Mandatory - Represent the name of the channel to return reader events to.
+- SliceThreshold - Optional - Represent the threshold amount of data rows in one Event to receive from KubeMQ MSSQLConnector.( If left empty setting to default of 1.)
+- Key - Optional - A string identifier that help distinguish between StreamResultModels.
 
 # The 'ResultModel' object:
 Struct that return the Data Base answer result, can also indicate if any errors occurred when trying to run the DB Procedure.
@@ -165,6 +174,7 @@ Creating a DataReader ProceduresType.ExecuteDataReader that streams evet of a si
   sqlCommand.StreamParameters.ReaderReturnChannel = ChannelToReturnStream;
   //Optional parameter for delay between events that are sent from KubeMQ MSSQLConnector.
   sqlCommand.StreamParameters.DelayBetweenEvents = 500;
+  sqlCommand.StreamParameters.Key = "MyKeySingleRowReader";
   Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.ExecuteDataReader, sqlCommand));
   ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
   if (resultModel.Result == (int)ResultsEnum.Error)
@@ -253,3 +263,24 @@ Handle incoming traffic from KubeMQM/SSQL Connector for ProceduresType.ExecuteDa
       }
   }
 ```
+Handle incoming dynamic traffic from KubeMQM/SSQL Connector for Reader from code and switch logic:
+```C#
+        private void HandleIncomingEventsReaderAllTypes(EventReceive eventReceive)
+        {
+            StreamResultModel streamResultModel = Converter.FromByteArray(eventReceive.Body) as StreamResultModel;
+
+            switch (streamResultModel.Key)
+            {
+                case "MyKeySingleRowReader":
+                    //Do some SingleRow logic
+                    break;
+                case "ReaderWithSlice":
+                    //Do some Reader with slice logic
+                    break;
+                case "ReaderMultiTable":
+                    //Do some MultiTable Logic
+                    break;
+            }
+        }
+```
+
