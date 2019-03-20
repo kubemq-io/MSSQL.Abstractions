@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Data;
 
 namespace KubeMSSQL.Abstractions
@@ -37,6 +38,7 @@ namespace KubeMSSQL.Abstractions
         {
             SetSqlDBTypeAndName(_ParameterName, _SqlDbType);
         }
+        [JsonConstructor]
         /// <summary>
         /// Initializes a new instance of the KubeMSSQL.Abstractions.KubeSqlParamters with value.
         /// </summary>

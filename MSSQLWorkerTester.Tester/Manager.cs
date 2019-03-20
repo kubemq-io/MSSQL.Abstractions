@@ -6,6 +6,8 @@ using KubeMSSQL.Abstractions;
 using KubeMQ.SDK.csharp.Subscription;
 using KubeMQ.SDK.csharp.Events;
 using KubeMQ.SDK.csharp.Tools;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace MSSQLWorkerTester
 {
@@ -63,7 +65,8 @@ namespace MSSQLWorkerTester
             sqlCommand.kubeMQSqlParameters.Add(SqlParameterout2);
 
             Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.Adapter, sqlCommand));
-            ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
+            string json = System.Text.Encoding.Default.GetString(response.Body);
+            ResultModel resultModel = JsonConvert.DeserializeObject<ResultModel>(json);
             if (resultModel.Result == (int)ResultsEnum.Error)
             {
                 return false;
@@ -83,8 +86,8 @@ namespace MSSQLWorkerTester
             sqlCommand.CommandText = "Procedure.Name";
 
             Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.NonQuery, sqlCommand));
-
-            ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
+            string json = System.Text.Encoding.Default.GetString(response.Body);
+            ResultModel resultModel = JsonConvert.DeserializeObject<ResultModel>(json);
             if (resultModel.Result == (int)ResultsEnum.Error)
             {
                 return false;
@@ -112,7 +115,8 @@ namespace MSSQLWorkerTester
             sqlCommand.kubeMQSqlParameters.Add(SqlParameterout);
 
             Response response = initiatorChannel.SendRequest(CreateRequest((int)ProceduresType.Scalar, sqlCommand));
-            ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
+            string json = System.Text.Encoding.Default.GetString(response.Body);
+            ResultModel resultModel = JsonConvert.DeserializeObject<ResultModel>(json);
             if (resultModel.Result == (int)ResultsEnum.Error)
             {
                 return false;
@@ -137,7 +141,8 @@ namespace MSSQLWorkerTester
             //Optional parameter for delay between events that are sent from KubeMQ MSSQLConnector.
             sqlCommand.StreamParameters.DelayBetweenEvents = 500;
             Response response = initiatorChannel.SendRequest(CreateRequest(((int)ProceduresType.ExecuteDataReader), sqlCommand));
-            ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
+            string json = System.Text.Encoding.Default.GetString(response.Body);
+            ResultModel resultModel = JsonConvert.DeserializeObject<ResultModel>(json);
             if (resultModel.Result == (int)ResultsEnum.Error)
             {
                 return false;
@@ -163,7 +168,8 @@ namespace MSSQLWorkerTester
             sqlCommand.StreamParameters.DelayBetweenEvents = 500;
             sqlCommand.StreamParameters.SliceThreshold = 20;
             Response response = initiatorChannel.SendRequest(CreateRequest(((int)ProceduresType.ExecuteDataReaderWithSlice), sqlCommand));
-            ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
+            string json = System.Text.Encoding.Default.GetString(response.Body);
+            ResultModel resultModel = JsonConvert.DeserializeObject<ResultModel>(json);
             if (resultModel.Result == (int)ResultsEnum.Error)
             {
                 return false;
@@ -186,7 +192,8 @@ namespace MSSQLWorkerTester
             sqlCommand.CommandText = "Procedure.Name";
             sqlCommand.StreamParameters.ReaderReturnChannel = ChannelToReturnStream;
             Response response = initiatorChannel.SendRequest(CreateRequest(((int)ProceduresType.ExecuteDataReaderWithMultiTable), sqlCommand));
-            ResultModel resultModel = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(response.Body) as ResultModel;
+            string json = System.Text.Encoding.Default.GetString(response.Body);
+            ResultModel resultModel = JsonConvert.DeserializeObject<ResultModel>(json);
             if (resultModel.Result == (int)ResultsEnum.Error)
             {
                 return false;
@@ -206,10 +213,11 @@ namespace MSSQLWorkerTester
         /// <returns></returns>
         private Request CreateRequest(int SqlCommandType, SQLCommandRequest sqlCommand)
         {
-
+            string json = JsonConvert.SerializeObject(sqlCommand);
+            byte[] array = Encoding.ASCII.GetBytes(json);
             Request request = new Request
             {
-                Body = KubeMQ.SDK.csharp.Tools.Converter.ToByteArray(sqlCommand),
+                Body = array,
                 Metadata = SqlCommandType.ToString()
             };
             return request;
@@ -249,7 +257,8 @@ namespace MSSQLWorkerTester
         private void HandleIncomingEventsExecuteReader(EventReceive eventReceive)
         {
             logger.LogDebug("Received event");
-            StreamResultModel streamResult = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(eventReceive.Body) as StreamResultModel;
+            string json = System.Text.Encoding.Default.GetString(eventReceive.Body);
+            StreamResultModel streamResult = JsonConvert.DeserializeObject<StreamResultModel>(json);
             DataRow dataRow = streamResult.dataTable.Rows[0];
             logger.LogDebug($"Received row from KubeMQ");
         }
@@ -261,7 +270,8 @@ namespace MSSQLWorkerTester
         private void HandleIncomingEventsReaderWithSlice(EventReceive eventReceive)
         {
             logger.LogDebug("Received event");
-            StreamResultModel streamResult = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(eventReceive.Body) as StreamResultModel;
+            string json = System.Text.Encoding.Default.GetString(eventReceive.Body);
+            StreamResultModel streamResult = JsonConvert.DeserializeObject<StreamResultModel>(json);
             if (streamResult.dataTable.Rows.Count == 20)
             {
                 logger.LogDebug($"Received rows from KubeMQ");
@@ -279,7 +289,8 @@ namespace MSSQLWorkerTester
         private void HandleIncomingEventsReaderWithMultiTable(EventReceive eventReceive)
         {
             logger.LogDebug("Received event");
-            StreamResultModel streamResult = KubeMQ.SDK.csharp.Tools.Converter.FromByteArray(eventReceive.Body) as StreamResultModel;
+            string json = System.Text.Encoding.Default.GetString(eventReceive.Body);
+            StreamResultModel streamResult = JsonConvert.DeserializeObject<StreamResultModel>(json);
             if (streamResult != null)
             {
                 logger.LogDebug($"Received dataTable from KubeMQ");
@@ -292,7 +303,8 @@ namespace MSSQLWorkerTester
         /// <param name="eventReceive"></param>
         private void HandleIncomingEventsReaderAllTypes(EventReceive eventReceive)
         {
-            StreamResultModel streamResultModel = Converter.FromByteArray(eventReceive.Body) as StreamResultModel;
+            string json = System.Text.Encoding.Default.GetString(eventReceive.Body);
+            StreamResultModel streamResultModel = JsonConvert.DeserializeObject<StreamResultModel>(json);
 
             switch (streamResultModel.Key)
             {
